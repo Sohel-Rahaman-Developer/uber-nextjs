@@ -14,7 +14,6 @@ function Login() {
     onAuthStateChanged(auth, user => {
       if (user) {
         window.location.href = '/'; // Redirect to login page
-
       }
     });
   }, []);
@@ -23,7 +22,9 @@ function Login() {
     try {
       await signInWithPopup(auth, provider);
       const redirectUrl = searchParams.get("redirectUrl") || "/";
-      router.push(redirectUrl);
+    //   router.push(redirectUrl);
+    window.location.href = redirectUrl; // Redirect to login page
+
     } catch (error) {
       setError(error.message);
     }

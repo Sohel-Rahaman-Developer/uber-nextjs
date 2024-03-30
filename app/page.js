@@ -9,7 +9,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useSearchParams } from "next/navigation"; // Import useSearchParams from next/navigation
 
 export default function Home() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
   const [searchParams] = useSearchParams(); // Use useSearchParams to access query parameters
 
   useEffect(() => {
@@ -25,7 +25,8 @@ export default function Home() {
       }
     });
   }, []);
-
+  
+  console.log(user)
   return (
     <>
       <Wrapper>
@@ -38,9 +39,9 @@ export default function Home() {
             {/* profile */}
             <Profile>
               {/* name */}
-              <Name>{user ? user.displayName : 'user'}</Name>
+              <Name>{user ? user.name : 'user'}</Name>
               {/* userImage */}
-              <UserImage src={user ? user.photoURL : 'https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'} onClick={() => signOut(auth)} />
+              <UserImage src={user ? user.photo : 'https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'} onClick={() => signOut(auth)} />
             </Profile>
           </Header>
           {/* action buttons */}

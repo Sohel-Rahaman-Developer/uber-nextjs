@@ -1,95 +1,129 @@
-import Image from "next/image";
+"use client"
 import styles from "./page.module.css";
+import tw from "tailwind-styled-components";
+import { useEffect, useState } from "react";
+import Map from "./components/Map";
+import Link from "next/link";
+import { auth } from "@/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useSearchParams } from "next/navigation"; // Import useSearchParams from next/navigation
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  const [searchParams] = useSearchParams(); // Use useSearchParams to access query parameters
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser({
+          name: user.displayName,
+          photo: user.photoURL,
+        });
+      } else {
+        setUser(null);
+        window.location.href = '/login'; // Redirect to login page
+      }
+    });
+  }, []);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <>
+      <Wrapper>
+        <Map />
+        <ActionItems>
+          {/* header */}
+          <Header>
+            {/* image */}
+            <UberLogo src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"></UberLogo>
+            {/* profile */}
+            <Profile>
+              {/* name */}
+              <Name>{user ? user.displayName : 'user'}</Name>
+              {/* userImage */}
+              <UserImage src={user ? user.photoURL : 'https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'} onClick={() => signOut(auth)} />
+            </Profile>
+          </Header>
+          {/* action buttons */}
+          <ActionButtons>
+            <ActionButton>
+              <Link href="/searchscreen">
+                <StyledLink>
+                  <ActionButtonImage src="/uberimages/uberCar.webp" />
+                  Ride
+                </StyledLink>
+              </Link>
+            </ActionButton>
+            <ActionButton>
+              <Link href="/searchscreen">
+                <StyledLink>
+                  <ActionButtonImage src="/uberimages/cycleUber.png" />
+                  Wheels
+                </StyledLink>
+              </Link>
+            </ActionButton>
+            <ActionButton>
+              <Link href="/searchscreen">
+                <StyledLink>
+                  <ActionButtonImage src="/uberimages/uberCar.webp" />
+                  Reserve
+                </StyledLink>
+              </Link>
+            </ActionButton>
+          </ActionButtons>
+          {/* inputbutton */}
+          <Link href="/searchscreen">
+            <InputButton>Where to?</InputButton>
+          </Link>
+        </ActionItems>
+      </Wrapper>
+    </>
   );
 }
+
+const Wrapper = tw.div`
+flex flex-col  h-screen
+`;
+
+const ActionItems = tw.div`
+ flex-1
+`;
+
+const Header = tw.div`
+flex justify-between items-center p-4
+`;
+
+const UberLogo = tw.img`
+h-10
+`;
+
+const Profile = tw.div`
+flex justify-between items-center
+`;
+
+const Name = tw.div`
+mr-2 w-30 text-sm
+`;
+
+const UserImage = tw.img`
+h-12 w-12 rounded-full cursor-pointer
+`;
+
+const ActionButtons = tw.div`
+flex justify-center items-center p-2
+`;
+
+const ActionButton = tw.div`
+p-2 bg-gray-200 flex-1 m-2 rounded flex flex-col justify-center items-center transform hover:scale-105 transition
+`;
+
+const ActionButtonImage = tw.img`
+h-3/6
+`;
+
+const InputButton = tw.div`
+h-20 bg-gray-200 text-2xl p-4 flex items-center mx-4 font-bold
+`;
+
+const StyledLink = tw.div`
+h-full w-full flex flex-col justify-center items-center
+`;
